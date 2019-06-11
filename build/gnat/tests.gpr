@@ -1,0 +1,12 @@
+with "jni.gpr";
+
+project Tests is
+   for Source_Dirs use ("../../tests");
+   for Object_Dir  use "gen/" & JNI.Mode & "/tests/.obj";
+   for Exec_Dir    use "gen/" & JNI.Mode & "/tests";
+   for Main        use ("test.adb");
+
+   package Compiler renames JNI.Compiler;
+
+   -- package Linker renames JNI.Linker;
+end Tests;

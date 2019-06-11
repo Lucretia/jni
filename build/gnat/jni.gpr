@@ -1,0 +1,40 @@
+library project JNI is
+   Version := "0.1";
+
+   type Build_Type is ("linux", "bsd", "windows", "macosx");
+   type Mode_Type is ("debug", "release");
+
+   Mode  : Mode_Type  := external ("JNI_MODE", "debug");
+   Build : Build_Type := external ("JNI_BUILD", "linux");
+
+   for Languages use ("C", "Ada");
+
+   package Compiler is
+      C_Switches   := ("-ffunction-sections", "-fdata-sections", "-fpic");
+      Ada_Switches := ("-ffunction-sections", "-fdata-sections", "-fpic",
+                       "-gnat2012", "-gnata", "-gnato", "-gnatE",
+                       "-gnaty", "-gnaty-s", "-gnatyO", "-gnatyM120", "-gnatyO",
+                       "-gnatwu");
+
+      case Mode is
+         when "debug" =>
+            C_Switches   := C_Switches & ("-O0", "-g");
+            Ada_Switches := Ada_Switches & ("-O0", "-g");
+
+         when "release" =>
+            C_Switches   := C_Switches & ("-O2");
+            Ada_Switches := Ada_Switches & ("-O2");
+      end case;
+
+      for Default_Switches ("C") use C_Switches;
+      for Default_Switches ("Ada") use Ada_Switches;
+   end Compiler;
+
+   for Source_Dirs     use ("../../src", "../../src/" & Build);
+   for Object_Dir      use "gen/" & Mode & "/.obj";
+   for Library_ALI_Dir use "gen/" & Mode & "/.obj/ali";
+   for Library_Dir     use "gen/" & Mode;
+   for Library_Name    use "jni-ada";
+   for Library_Version use "libjni-ada.so." & Version;
+   for Library_Kind    use "static";
+end JNI;
